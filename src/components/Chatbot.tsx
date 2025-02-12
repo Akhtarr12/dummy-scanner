@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
 import { Mic, MicOff, Send, Loader2 } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   content: string;
@@ -18,6 +19,8 @@ export const Chatbot = ({ imageAnalysis }: { imageAnalysis?: string }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+ // const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const CHATBOT_ENDPOINT = "http://localhost:5001/api/chatbot";
 

@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Image as ImageIcon } from 'lucide-react';
+import { Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { toast } from 'sonner';
+import { Progress } from './ui/progress';
+import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 
 interface DetectionResult {
@@ -21,28 +22,77 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const checkImageClarity = (file: File): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        // Basic check for image dimensions
+        if (img.width < 200 || img.height < 200) {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      };
+
+      img.src = objectUrl;
+    });
+  };
 
   const detectSkinCondition = async (file: File) => {
     setLoading(true);
     try {
+      const isImageClear = await checkImageClarity(file);
+
+      if (!isImageClear) {
+        toast({
+          title: "Image Quality Issue",
+          description: "Please upload a clearer image with better resolution",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const formData = new FormData();
       formData.append('image', file);
 
-      // Use the backend URL from environment variables
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      console.log('Sending request to:', `${backendUrl}/api/detect`);
-
       const response = await axios.post(`${backendUrl}/api/detect`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      
+
       setDetectionResult(response.data);
-      toast.success('Detection completed');
+      setRetryCount(0);
+      toast({
+        title: "Success",
+        description: 'Detection completed'
+      });
     } catch (error: unknown) {
       console.error('Detection error:', error);
-      toast.error('Error detecting skin condition');
+
+      if (retryCount < 2) {
+        toast({
+          title: "Detection Failed",
+          description: "Please try uploading the image again",
+          variant: "destructive"
+        });
+        setRetryCount(prev => prev + 1);
+      } else {
+        toast({
+          title: "Service Unavailable",
+          description: "Please use our chatbot service for assistance",
+          variant: "destructive"
+        });
+        setRetryCount(0);
+      }
     } finally {
       setLoading(false);
     }
@@ -51,18 +101,29 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please upload an image smaller than 5MB",
+          variant: "destructive"
+        });
+        return;
+      }
+
       onImageUpload(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
-        toast.success('Image uploaded successfully');
+        toast({
+          title: "Success",
+          description: 'Image uploaded successfully'
+        });
       };
       reader.readAsDataURL(file);
 
-      // Call the backend for detection
       detectSkinCondition(file);
     }
-  }, [onImageUpload]);
+  }, [onImageUpload, retryCount]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -88,16 +149,16 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
               className="mt-4"
               onClick={(e) => {
                 e.stopPropagation();
-                // Reset for a new upload
                 setPreview(null);
                 setDetectionResult(null);
+                setRetryCount(0);
               }}
             >
               Upload New Image
             </Button>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 p-8 border-2 border-dashed rounded-lg hover:bg-muted/50 transition-colors">
             {isDragActive ? (
               <>
                 <ImageIcon className="w-12 h-12 text-primary" />
@@ -107,13 +168,21 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
               <>
                 <Upload className="w-12 h-12 text-primary" />
                 <p>Drag & drop an image here, or click to select</p>
+                <p className="text-sm text-muted-foreground">
+                  Upload a clear, well-lit image for best results
+                </p>
               </>
             )}
           </div>
         )}
       </div>
 
-      {loading && <p className="mt-4">Detecting skin condition...</p>}
+      {loading && (
+        <div className="mt-4 space-y-2">
+          <Progress value={100} className="animate-pulse" />
+          <p className="text-center text-sm text-muted-foreground">Detecting skin condition...</p>
+        </div>
+      )}
 
       {detectionResult && (
         <div className="mt-4">
@@ -136,7 +205,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
               )}
             </>
           ) : (
-            <p>Sorry, I am unable to detect this. Please seek help from our chatbot.</p>
+            <div className="p-4 bg-muted rounded-lg">
+              <p className="text-center">
+                Unable to analyze this image. Please try uploading a clearer image or use our chatbot for assistance.
+              </p>
+            </div>
           )}
         </div>
       )}
