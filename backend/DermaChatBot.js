@@ -3,7 +3,7 @@ const { OpenAI } = require("openai");
 const createPineconeClient = require("./config/pineconeConfig");
 const openaiClient = require("./config/openaiConfig");
 const { getEmbeddings } = require("./embeddings");
-const PineconeHybridSearchRetriever = require("./retrievers/pineconeHybridSearchRetriever");
+const pineconeDenseSearchRetriever = require("./retrievers/pineconeDenseSearchRetriever");
 const bm25EncoderNew = require("./utils/bm25EncoderNew");
 const bm25EncoderAyurved = require("./utils/bm25EncoderAyurved");
 const BM25EncoderManager = require("./utils/bm25EncoderManager");
@@ -97,7 +97,7 @@ this.namespace2 = namespace2 || 'namespace_ayurved';
       await this.indexLoaded; 
       const embeddingsInstance = await getEmbeddings();
         
-      const retriever = new PineconeHybridSearchRetriever({
+      const retriever = new pineconeDenseSearchRetriever({
           embeddings: embeddingsInstance,
           top_k,
           index: this.index
@@ -123,12 +123,12 @@ ${similarVectors}
 
 2. Format:
 Normal Medicine Solutions:
--------------------------
+------
 • Max 3 bullet points from MEDICAL[] context
 • If none: "No modern recommendations"
-
+ 
 Ayurvedic Solutions:
---------------------
+------
 • Max 3 bullet points from AYURVEDIC[] context
 • If none: "No ayurvedic recommendations"
 
