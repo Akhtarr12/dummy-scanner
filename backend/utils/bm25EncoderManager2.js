@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-class BM25EncoderManager {
+class BM25EncoderManager2 {
   constructor(filePath) {
     this.filePath = filePath;
     this.encoder = null;
@@ -45,4 +45,4 @@ class BM25EncoderManager {
   }
 }
 
-module.exports = BM25EncoderManager;
+module.exports = BM25EncoderManager2;

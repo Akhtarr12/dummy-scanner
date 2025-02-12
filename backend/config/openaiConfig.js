@@ -52,7 +52,7 @@ class ServiceInitializer {
       // Test connection with better error handling
       try {
         // First try to describe indexes instead of listing
-        const indexList = await this.pineconeClient.listIndexes();
+        const indexes= await this.pineconeClient.listIndexes();
         console.log('✅ Pinecone initialized successfully!');
         return this.pineconeClient;
       } catch (indexError) {
