@@ -9,7 +9,7 @@ export default function Navbar() {
           <Link href="/">
             <div className="flex items-center space-x-2 cursor-pointer">
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                DermAI
+                Skin Nexus
               </span>
             </div>
           </Link>

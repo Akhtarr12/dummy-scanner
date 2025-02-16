@@ -17,7 +17,7 @@ exports.detectSkinCondition = async (req, res) => {
     form.append('image', fs.createReadStream(imagePath), req.file.originalname);
     
     // Call AWS detection API
-    const awsResponse = await axios.post('http://13.60.184.97:5000/detect', form, {
+    const awsResponse = await axios.post('http://13.51.205.146:5000/detect', form, {
       headers: form.getHeaders()
     });
     
