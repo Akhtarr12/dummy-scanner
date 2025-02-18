@@ -7,7 +7,12 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link href="/">
-            <div className="flex items-center space-x-2 cursor-pointer">
+            <div className="flex items-center space-x-4 cursor-pointer">
+            <img
+                src="/assets/logo.png"
+                alt="Skin Nexus Logo"
+                className="h-16 w-16 object-contain"
+              />
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                 Skin Nexus
               </span>
