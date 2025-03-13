@@ -1,6 +1,6 @@
 const pinecone = require("../config/pineconeConfig");
 const embeddings = require("../embeddings");
-const BM25EncoderManager = require("../utils/bm25EncoderManager"); // Corrected import path
+const BM25EncoderManager = require("../utils/bm25EncoderManager"); 
 
 // Update the path to the BM25 values file
 const bm25Manager = new BM25EncoderManager('./data/bm25_values_new.json');

@@ -43,10 +43,10 @@ this.namespace2 = namespace2 || 'namespace_ayurved';
     this.indexLoaded = createPineconeClient()
       .then((index) => {
         this.index = index;
-        console.log("✅ Pinecone client initialized successfully!");
+        console.log(" Pinecone client initialized successfully!");
       })
       .catch((error) => {
-        console.error("❌ Pinecone initialization failed:", error);
+        console.error(" Pinecone initialization failed:", error);
       });
 
     this.encoderLoaded = Promise.all([
@@ -66,10 +66,10 @@ this.namespace2 = namespace2 || 'namespace_ayurved';
       if (!this.openaiClient) throw new Error("OpenAI client not initialized");
       
       const models = await this.openaiClient.models.list();
-      console.log("✅ OpenAI client initialized successfully!");
+      console.log(" OpenAI client initialized successfully!");
       console.log("Available models:", models.data.map(m => m.id));
     } catch (err) {
-      console.error("❌ OpenAI client initialization failed!", err.message);
+      console.error(" OpenAI client initialization failed!", err.message);
     }
   }
 
@@ -91,8 +91,8 @@ this.namespace2 = namespace2 || 'namespace_ayurved';
 
   async fetchFromDb(query, alpha = 0.5, top_k = 3) {
     try {
-      console.log(`🔍 Fetching from Database: Query = "${query}"`);
-      console.log(`📊 Search Parameters: alpha = ${alpha}, top_k = ${top_k}`);
+      console.log(`Fetching from Database: Query = "${query}"`);
+      console.log(`Search Parameters: alpha = ${alpha}, top_k = ${top_k}`);
       await this.encoderLoaded;
       await this.indexLoaded; 
       const embeddingsInstance = await getEmbeddings();
@@ -106,7 +106,7 @@ this.namespace2 = namespace2 || 'namespace_ayurved';
       const relevantDocs = await retriever.invoke(query);
       
       // Log retrieved documents
-      console.log(`📚 Documents Retrieved: ${relevantDocs.length}`);
+      console.log(` Documents Retrieved: ${relevantDocs.length}`);
       relevantDocs.forEach((doc, index) => {
           console.log(`   Doc ${index + 1} - Score: ${doc.score} - Namespace: ${doc.namespace}`);
       });
@@ -141,8 +141,8 @@ Ayurvedic Solutions:
             content: query
         }]);
         // Log response 
-        console.log(`💬 Generated Response Length: ${responseText.length} characters`);
-        console.log(`🔍 Response Preview: ${responseText.substring(0, 200)}...`);
+        console.log(` Generated Response Length: ${responseText.length} characters`);
+        console.log(` Response Preview: ${responseText.substring(0, 200)}...`);
 
         this.updateConversation(query, responseText);
         return responseText;
@@ -184,7 +184,7 @@ getFallbackResponse() {
   async checkpointCheck(query) {
     console.log("checkpointCheck query:", query);
     try {
-      // Remove the context from the system prompt since we don't have similarVectors
+    
       const responseText = await this.createChatCompletion([
         {
           role: "system",
@@ -204,7 +204,7 @@ Respond with a JSON object with these keys:
         }
       ], "gpt-3.5-turbo");
 
-      // Parse the response as JSON
+      
       const resDict = JSON.parse(responseText);
       
       if (resDict.fetch_from_db === -1) {

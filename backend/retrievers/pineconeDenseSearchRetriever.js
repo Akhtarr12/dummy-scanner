@@ -17,7 +17,7 @@ class PineconeDenseSearchRetriever {
 
   async retryQuery(namespace, queryEmbedding, attempt = 1) {
     try {
-      console.log(`\n🔄 Attempt ${attempt} - Querying namespace: ${namespace}`);
+      console.log(`\n Attempt ${attempt} - Querying namespace: ${namespace}`);
       console.log("Query vector dimension:", queryEmbedding.length);
       
       const adjustedVector = this.adjustVectorDimension(queryEmbedding);
@@ -46,9 +46,9 @@ class PineconeDenseSearchRetriever {
       return response;
 
     } catch (error) {
-      console.error(`\n❌ Error querying ${namespace}:`, error);
+      console.error(`\n Error querying ${namespace}:`, error);
       if (attempt < this.maxRetries) {
-        console.log(`\n🔄 Retrying in ${this.retryDelay/1000} seconds...`);
+        console.log(`\n Retrying in ${this.retryDelay/1000} seconds...`);
         await new Promise(resolve => setTimeout(resolve, this.retryDelay));
         return this.retryQuery(namespace, queryEmbedding, attempt + 1);
       }
@@ -59,8 +59,8 @@ class PineconeDenseSearchRetriever {
   async invoke(query) {
     try {
       console.log('\n=================================');
-      console.log(`🔎 Starting Dense Search`);
-      console.log(`📝 Query: "${query}"`);
+      console.log(` Starting Dense Search`);
+      console.log(`Query: "${query}"`);
 
       const queryEmbedding = await this.embeddings.embedQuery(query);
       console.log("Generated embedding dimension:", queryEmbedding.length);
@@ -85,7 +85,7 @@ class PineconeDenseSearchRetriever {
       const finalResults = sortedMatches.slice(0, this.top_k);
 
       console.log('\n=================================');
-      console.log('📊 Final Results Summary');
+      console.log(' Final Results Summary');
       console.log(`Total matches found: ${finalResults.length}`);
       finalResults.forEach((result, i) => {
         console.log(`\nResult ${i + 1}:`);
@@ -97,7 +97,7 @@ class PineconeDenseSearchRetriever {
       return finalResults;
 
     } catch (error) {
-      console.error('\n❌ Fatal Error in Search:', error);
+      console.error('\nFatal Error in Search:', error);
       throw error;
     }
   }
