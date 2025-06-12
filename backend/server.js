@@ -9,7 +9,7 @@ const { testEmbeddings } = require('./embeddings');
 //const rateLimit = require("express-rate-limit");
 require('dotenv').config();
 const app = express();
-const allowedOrigins = ['http://localhost:8080', 'http://192.168.1.34:8080'];
+const allowedOrigins = ['http://localhost:8080', 'https://skin-nexus-ai.vercel.app'];
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
