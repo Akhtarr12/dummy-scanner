@@ -1,0 +1,26 @@
+const axios = require('axios');
+require('dotenv').config();
+
+async function testHuggingFaceAPI() {
+  try {
+    const response = await axios.post(
+      "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2",
+      { inputs: "Hello world" },
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    
+    console.log("API call successful!");
+    console.log(`Got embedding with length: ${response.data.length}`);
+    return true;
+  } catch (error) {
+    console.error("API call failed:", error.response?.data || error.message);
+    return false;
+  }
+}
+
+testHuggingFaceAPI();

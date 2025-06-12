@@ -4,6 +4,7 @@ const cors = require('cors');
 const DermaChatBot = require("./DermaChatBot");
 const bodyParser = require("body-parser");
 const dotenv = require('dotenv');
+const { testEmbeddings } = require('./embeddings');
 
 //const rateLimit = require("express-rate-limit");
 require('dotenv').config();
@@ -28,7 +29,18 @@ app.use(bodyParser.json());
 
 const detectRoutes = require('./routes/detectRoutes');
 const chatbotRoutes = require("./routes/chatbotRoutes");
-
+app.get("/api/test-embeddings", async (req, res) => {
+  try {
+    const result = await testEmbeddings();
+    if (result) {
+      res.json({ status: "success", message: "Embeddings test passed" });
+    } else {
+      res.status(500).json({ status: "error", message: "Embeddings test failed" });
+    }
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+});
 
 const bot = new DermaChatBot(
   process.env.OPENAI_API_KEY,

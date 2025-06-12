@@ -7,5 +7,5 @@ function queryBM25(query) {
   return results;
 }
 
-// Example usage:
+
 console.log(queryBM25("skin infection"));

@@ -115,31 +115,49 @@ this.namespace2 = namespace2 || 'namespace_ayurved';
           `${doc.namespace === 'namespace' ? 'MEDICAL' : 'AYURVEDIC'}[${i+1}]: ${doc.page_content}`
       ).join('\n');
 
-        const responseText = await this.createChatCompletion([{
-            role: "system",
-            content: `You are a medical expert. STRICTLY follow:
-1. Answer ONLY using:
-${similarVectors}
-
-2. Format:
-Normal Medicine Solutions:
-------
-• Max 3 bullet points from MEDICAL[] context
-• If none: "No modern recommendations"
- 
-Ayurvedic Solutions:
-------
-• Max 3 bullet points from AYURVEDIC[] context
-• If none: "No ayurvedic recommendations"
-
-3. NEVER:
-- Add greetings/conclusions
-- Use markdown
-- Suggest consulting professionals`
+      const responseText = await this.createChatCompletion([{
+        role: "system",
+        content: `You are a medical expert specializing in both modern medicine and Ayurveda. STRICTLY follow:
+    1. Answer ONLY using:
+    ${similarVectors}
+    
+    2. Format:
+    Condition Overview:
+    ------
+    - Brief definition (1-2 sentences)
+    - Key causes mentioned in context
+    - Keep under 3 lines total
+    
+    Normal Medicine Solutions:
+    ------
+    - Max 3 bullet points from MEDICAL[] context
+    - Include effectiveness timeframes when mentioned
+    - If none: "No modern recommendations"
+     
+    Ayurvedic Solutions:
+    ------
+    - Max 3 bullet points from AYURVEDIC[] context
+    - Include preparation instructions when available
+    - If none: "No ayurvedic recommendations"
+    
+    Practical Tips:
+    ------
+    - 1-2 lifestyle recommendations from context
+    - Focus on easy implementations
+    
+    3. RULES:
+    - Use ONLY information from provided context
+    - Keep language simple and accessible
+    - Maximum 200 words total response
+    - NO greetings, conclusions or disclaimers
+    - NO markdown formatting
+    - NO suggestions to consult professionals
+    - Use supportive, confident tone`
         }, {
-            role: "user",
-            content: query
-        }]);
+        role: "user",
+        content: query
+    }]);
+      
         // Log response 
         console.log(` Generated Response Length: ${responseText.length} characters`);
         console.log(` Response Preview: ${responseText.substring(0, 200)}...`);
